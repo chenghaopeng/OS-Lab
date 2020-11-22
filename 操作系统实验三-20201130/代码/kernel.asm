@@ -20,6 +20,15 @@ KEY_ENTER equ 0dh
 keyboard_map db 0h, KEY_ESC, "1234567890-=", KEY_BACKSPACE, KEY_TAB, "qwertyuiop[]", KEY_ENTER, KEY_CTRL, "asdfghjkl;'`", KEY_SHIFT, "\zxcvbnm,./", KEY_SHIFT, "*", 0h, " ", KEY_CAPSLOCK, 0h
 
 [bits 32]
+clock_int:
+    pushad
+    mov al, 0x20
+    out 0xa0, al
+    out 0x20, al
+    popad
+    call clock
+    iret
+
 keyboard_int:
     pushad
     cli
@@ -42,19 +51,6 @@ keyboard_int:
     popad
     iret
 
-init_int:
-    pushf
-    push eax
-    cli
-    mov al, 11111101b
-    out 0x21, al
-    mov al, 11111111b
-    out 0xa1, al
-    pop eax
-    popf
-    sti
-    ret
-
 start:
     mov edx, SLCTR_VIDEO
     mov ds, edx
@@ -69,10 +65,42 @@ start:
     call set_tmp
     call set_ctrl
     call set_history_len
+    call set_time_tick
     call clear
     call init_int
 .tail:
     jmp $
+
+init_int:
+    pushf
+    push eax
+    cli
+    mov al, 11111100b
+    out 0x21, al
+    mov al, 11111111b
+    out 0xa1, al
+    pop eax
+    popf
+    sti
+    ret
+
+clock:
+    pushad
+    call get_time_tick
+    inc edx
+    call set_time_tick
+    cmp edx, 7000
+    jl .finish
+    call get_esc
+    cmp edx, 0
+    jnz .finish
+    mov edx, 0
+    call set_time_tick
+    call set_len
+    call display
+.finish:
+    popad
+    ret
 
 got_key:
     pushad
@@ -427,6 +455,22 @@ set_history_len:
     push eax
     mov eax, 0xffff
     sub eax, 0x20
+    mov dword [es:eax], edx
+    pop eax
+    ret
+
+get_time_tick:
+    push eax
+    mov eax, 0xffff
+    sub eax, 0x24
+    mov edx, dword [es:eax]
+    pop eax
+    ret
+
+set_time_tick:
+    push eax
+    mov eax, 0xffff
+    sub eax, 0x24
     mov dword [es:eax], edx
     pop eax
     ret
