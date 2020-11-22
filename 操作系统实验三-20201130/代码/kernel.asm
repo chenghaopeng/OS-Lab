@@ -17,9 +17,44 @@ KEY_CTRL_UP equ 13h
 KEY_TAB equ 09h
 KEY_ENTER equ 0dh
 
-keyboard_map db 0h, KEY_ESC, "1234567890-=", KEY_BACKSPACE, KEY_TAB, "qwertyuiop[]", KEY_ENTER, KEY_CTRL, "asdfghjkl;'`", KEY_SHIFT, "\zxcvbnm,./", KEY_SHIFT, "*", 0h, " ", KEY_CAPSLOCK
+keyboard_map db 0h, KEY_ESC, "1234567890-=", KEY_BACKSPACE, KEY_TAB, "qwertyuiop[]", KEY_ENTER, KEY_CTRL, "asdfghjkl;'`", KEY_SHIFT, "\zxcvbnm,./", KEY_SHIFT, "*", 0h, " ", KEY_CAPSLOCK, 0h
 
 [bits 32]
+keyboard_int:
+    pushad
+    cli
+    mov al, 0x20
+    out 0xa0, al
+    out 0x20, al
+    mov al, 0xad
+    out 0x64, al
+    xor eax, eax
+    in al, 0x64
+    test al, 0x01
+    jz .end
+    in al, 0x60
+    call got_key
+    call display
+.end:
+    mov al, 0xae
+    out 0x64, al
+    sti
+    popad
+    iret
+
+init_int:
+    pushf
+    push eax
+    cli
+    mov al, 11111101b
+    out 0x21, al
+    mov al, 11111111b
+    out 0xa1, al
+    pop eax
+    popf
+    sti
+    ret
+
 start:
     mov edx, SLCTR_VIDEO
     mov ds, edx
@@ -35,17 +70,7 @@ start:
     call set_ctrl
     call set_history_len
     call clear
-.loop:
-    xor eax, eax
-    in al, 0x64
-    test al, 0x01
-    jz .end
-    in al, 0x60
-    call got_key
-    call display
-.end:
-    jmp .loop
-
+    call init_int
 .tail:
     jmp $
 
