@@ -502,6 +502,8 @@ display:
 .loop:
     cmp edx, ebx
     jz .finish
+    cmp eax, 2000
+    jge .finish
     xor ecx, ecx
     ;搞颜色
     push edx
@@ -555,10 +557,16 @@ display:
     mov cl, 20h
     call disp_char_x
     inc eax
+    cmp eax, 2000
+    jge .finish
     call disp_char_x
     inc eax
+    cmp eax, 2000
+    jge .finish
     call disp_char_x
     inc eax
+    cmp eax, 2000
+    jge .finish
     call disp_char_x
     inc eax
     jmp .next
@@ -578,6 +586,8 @@ display:
     jnz .enter_loop
     call disp_char_x
     inc eax
+    cmp eax, 2000
+    jge .finish
 .enter_loop:
     push eax
     push ebx
@@ -592,6 +602,8 @@ display:
     jz .next
     call disp_char_x
     inc eax
+    cmp eax, 2000
+    jge .finish
     jmp .enter_loop
 .next:
     inc edx
@@ -601,7 +613,7 @@ display:
     mov ch, 07h
     mov cl, 20h
 .clear:
-    cmp eax, 2500
+    cmp eax, 2000
     jz .ok
     call disp_char_x
     inc eax
