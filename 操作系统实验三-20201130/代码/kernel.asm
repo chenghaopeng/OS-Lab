@@ -97,6 +97,7 @@ clock:
     mov edx, 0
     call set_time_tick
     call set_len
+    call set_history_len
     call display
 .finish:
     popad
