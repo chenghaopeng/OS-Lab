@@ -11,11 +11,13 @@ KEY_BACKSPACE equ 08h
 KEY_SHIFT equ 10h
 KEY_SHIFT_UP equ 11h
 KEY_CAPSLOCK equ 14h
+KEY_CTRL equ 12h
+KEY_CTRL_UP equ 13h
 
 KEY_TAB equ 09h
 KEY_ENTER equ 0dh
 
-keyboard_map db 0h, KEY_ESC, "1234567890-=", KEY_BACKSPACE, KEY_TAB, "qwertyuiop[]", KEY_ENTER, 0h, "asdfghjkl;'`", KEY_SHIFT, "\zxcvbnm,./", KEY_SHIFT, "*", 0h, " ", KEY_CAPSLOCK
+keyboard_map db 0h, KEY_ESC, "1234567890-=", KEY_BACKSPACE, KEY_TAB, "qwertyuiop[]", KEY_ENTER, KEY_CTRL, "asdfghjkl;'`", KEY_SHIFT, "\zxcvbnm,./", KEY_SHIFT, "*", 0h, " ", KEY_CAPSLOCK
 
 [bits 32]
 start:
@@ -30,6 +32,8 @@ start:
     call set_esc
     call set_esc_point
     call set_tmp
+    call set_ctrl
+    call set_history_len
     call clear
 .loop:
     xor eax, eax
@@ -51,6 +55,8 @@ got_key:
     jz .shift_up
     cmp eax, 0xb6
     jz .shift_up
+    cmp eax, 0x9d
+    jz .ctrl_up
     cmp eax, 0x3a
     jg .finish
     mov ebx, keyboard_map
@@ -65,6 +71,10 @@ got_key:
     jmp .finish
 .shift_up:
     mov eax, KEY_SHIFT_UP
+    jmp .control
+.ctrl_up:
+    mov eax, KEY_CTRL_UP
+    jmp .control
 .control:
     call got_control
 .finish:
@@ -76,6 +86,17 @@ got_char:
     call get_esc
     cmp edx, 2
     jz .finish
+    call get_ctrl
+    cmp edx, 0
+    jz .not_ctrl
+    call get_esc
+    cmp edx, 0
+    jnz .finish
+    cmp eax, 'z'
+    jnz .finish
+    call undo
+    jmp .finish
+.not_ctrl:
     cmp eax, 'a'
     jl .continue
     cmp eax, 'z'
@@ -92,6 +113,12 @@ got_char:
     mov byte [es:edx], al
     inc edx
     call set_len
+    call get_esc
+    cmp edx, 0
+    jnz .finish
+    mov ah, al
+    mov al, 0
+    call dodo
 .finish:
     popad
     ret
@@ -112,6 +139,10 @@ got_control:
     jz .tab
     cmp eax, KEY_ENTER
     jz .kenter
+    cmp eax, KEY_CTRL
+    jz .ctrl
+    cmp eax, KEY_CTRL_UP
+    jz .ctrl_up
 .kesc:
     call get_esc
     cmp edx, 1
@@ -142,6 +173,9 @@ got_control:
     cmp edx, 0
     jz .finish
     dec edx
+    mov al, 1
+    mov ah, byte [es:edx]
+    call dodo
     call set_len
     jmp .finish
 .backspace_esc_input:
@@ -180,7 +214,67 @@ got_control:
     mov edx, 2
     call set_esc
     jmp .finish
+.ctrl:
+    mov edx, 1
+    call set_ctrl
+    jmp .finish
+.ctrl_up:
+    mov edx, 0
+    call set_ctrl
+    jmp .finish
 .finish:
+    popad
+    ret
+
+dodo:
+    pushad
+    call get_history_len
+    inc edx
+    call set_history_len
+    push eax
+    mov eax, edx
+    mov edx, 2
+    mul edx
+    mov edx, 0xffff
+    sub edx, 0x100
+    sub edx, eax
+    pop eax
+    mov word [es:edx], ax
+    call display
+    popad
+    ret
+
+undo:
+    pushad
+    call get_history_len
+    cmp edx, 0
+    jz .finish
+    mov eax, edx
+    mov edx, 2
+    mul edx
+    mov edx, 0xffff
+    sub edx, 0x100
+    sub edx, eax
+    xor eax, eax
+    mov ax, word [es:edx]
+    call get_history_len
+    dec edx
+    call set_history_len
+    cmp al, 0
+    jz .append
+.delete:
+    call get_len
+    mov byte [es:edx], ah
+    inc edx
+    call set_len
+    jmp .finish
+.append:
+    call get_len
+    dec edx
+    call set_len
+    jmp .finish
+.finish:
+    call display
     popad
     ret
 
@@ -276,6 +370,38 @@ set_tmp:
     push eax
     mov eax, 0xffff
     sub eax, 0x18
+    mov dword [es:eax], edx
+    pop eax
+    ret
+
+get_ctrl:
+    push eax
+    mov eax, 0xffff
+    sub eax, 0x1c
+    mov edx, dword [es:eax]
+    pop eax
+    ret
+
+set_ctrl:
+    push eax
+    mov eax, 0xffff
+    sub eax, 0x1c
+    mov dword [es:eax], edx
+    pop eax
+    ret
+
+get_history_len:
+    push eax
+    mov eax, 0xffff
+    sub eax, 0x20
+    mov edx, dword [es:eax]
+    pop eax
+    ret
+
+set_history_len:
+    push eax
+    mov eax, 0xffff
+    sub eax, 0x20
     mov dword [es:eax], edx
     pop eax
     ret
