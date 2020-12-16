@@ -5,6 +5,8 @@
                                                     Forrest Yu, 2005
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
 
+#ifndef PROC_H_
+#define PROC_H_
 
 typedef struct s_stackframe {	/* proc_ptr points here				↑ Low			*/
 	u32	gs;		/* ┓						│			*/
@@ -47,6 +49,11 @@ typedef struct s_task {
 	char	name[32];
 }TASK;
 
+typedef struct s_semaphore {
+	int value;
+	PROCESS* list[10];
+	int last;
+} SEMAPHORE;
 
 /* Number of tasks */
 #define NR_TASKS	3
@@ -60,3 +67,4 @@ typedef struct s_task {
 				STACK_SIZE_TESTB + \
 				STACK_SIZE_TESTC)
 
+#endif

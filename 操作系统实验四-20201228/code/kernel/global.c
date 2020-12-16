@@ -25,5 +25,5 @@ PUBLIC	TASK	task_table[NR_TASKS] = {{TestA, STACK_SIZE_TESTA, "TestA"},
 
 PUBLIC	irq_handler		irq_table[NR_IRQ];
 
-PUBLIC	system_call		sys_call_table[NR_SYS_CALL] = {sys_get_ticks};
+PUBLIC	system_call		sys_call_table[NR_SYS_CALL] = {sys_get_ticks, sys_sleep, sys_print, sys_signal_p, sys_signal_v};
 

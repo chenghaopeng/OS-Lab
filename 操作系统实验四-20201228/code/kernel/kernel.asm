@@ -343,7 +343,16 @@ sys_call:
 
         sti
 
+		push edx
+		push ecx
+		push ebx
+
         call    [sys_call_table + eax * 4]
+
+		pop ebx
+		pop ecx
+		pop edx
+
         mov     [esi + EAXREG - P_STACKBASE], eax
 
         cli

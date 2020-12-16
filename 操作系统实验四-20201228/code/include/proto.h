@@ -5,6 +5,8 @@
                                                     Forrest Yu, 2005
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
 
+#include "proc.h"
+
 /* klib.asm */
 PUBLIC void	out_byte(u16 port, u8 value);
 PUBLIC u8	in_byte(u16 port);
@@ -41,8 +43,16 @@ PUBLIC void init_keyboard();
 
 /* proc.c */
 PUBLIC  int     sys_get_ticks();        /* sys_call */
+PUBLIC  int     sys_sleep(int);
+PUBLIC  int     sys_print(char*);
+PUBLIC  int     sys_signal_p(SEMAPHORE*);
+PUBLIC  int     sys_signal_v(SEMAPHORE*);
 
 /* syscall.asm */
-PUBLIC  void    sys_call();             /* int_handler */
+PUBLIC  void    sys_call();
 PUBLIC  int     get_ticks();
+PUBLIC  int     sleep(int);
+PUBLIC  int     print(char*);
+PUBLIC  int     signal_p(SEMAPHORE*);
+PUBLIC  int     signal_v(SEMAPHORE*);
 
