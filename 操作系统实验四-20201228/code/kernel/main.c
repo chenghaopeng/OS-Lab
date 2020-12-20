@@ -61,9 +61,12 @@ PUBLIC int kernel_main()
 		selector_ldt += 1 << 3;
 	}
 
-	proc_table[0].ticks = proc_table[0].priority = 15;
-	proc_table[1].ticks = proc_table[1].priority =  5;
-	proc_table[2].ticks = proc_table[2].priority =  3;
+	proc_table[0].ticks = proc_table[0].priority = 20;
+	proc_table[1].ticks = proc_table[1].priority = 30;
+	proc_table[2].ticks = proc_table[2].priority = 30;
+	proc_table[3].ticks = proc_table[3].priority = 30;
+	proc_table[4].ticks = proc_table[4].priority = 40;
+	proc_table[5].ticks = proc_table[5].priority = 10;
 
 	k_reenter = 0;
 	ticks = 0;
@@ -92,7 +95,7 @@ void TestA()
 	int i = 0;
 	while (1) {
 		disp_str("A.");
-		milli_delay(1000);
+		milli_delay(10);
 	}
 }
 
@@ -104,18 +107,54 @@ void TestB()
 	int i = 0x1000;
 	while(1){
 		disp_str("B.");
-		milli_delay(5000);
+		milli_delay(10);
 	}
 }
 
 /*======================================================================*
-                               TestB
+                               TestC
  *======================================================================*/
 void TestC()
 {
 	int i = 0x2000;
 	while(1){
 		disp_str("C.");
-		milli_delay(10000);
+		milli_delay(10);
+	}
+}
+
+/*======================================================================*
+                               TestD
+ *======================================================================*/
+void TestD()
+{
+	int i = 0x3000;
+	while(1){
+		disp_str("D.");
+		milli_delay(10);
+	}
+}
+
+/*======================================================================*
+                               TestE
+ *======================================================================*/
+void TestE()
+{
+	int i = 0x4000;
+	while(1){
+		disp_str("E.");
+		milli_delay(10);
+	}
+}
+
+/*======================================================================*
+                               TestF
+ *======================================================================*/
+void TestF()
+{
+	int i = 0x5000;
+	while(1){
+		disp_str("F.");
+		milli_delay(10);
 	}
 }
