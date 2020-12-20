@@ -39,6 +39,9 @@ typedef struct s_proc {
         int ticks;                 /* remained ticks */
         int priority;
 
+	int sleep_start;
+	int sleep_duration;
+
 	u32 pid;                   /* process id passed in from MM */
 	char p_name[16];           /* name of the process */
 }PROCESS;

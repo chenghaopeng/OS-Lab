@@ -29,3 +29,12 @@ extern	char		task_stack[];
 extern  TASK            task_table[];
 extern	irq_handler	irq_table[];
 
+extern int ready_queue[];
+extern int ready_queue_size;
+extern void ready_queue_push(int);
+extern void ready_queue_pop();
+extern void ready_queue_remove(int);
+extern int ready_queue_find(int);
+extern void ready_queue_find_remove(int);
+extern int ready_queue_front();
+

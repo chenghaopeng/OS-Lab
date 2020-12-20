@@ -68,6 +68,11 @@ PUBLIC int kernel_main()
 	proc_table[4].ticks = proc_table[4].priority = 40;
 	proc_table[5].ticks = proc_table[5].priority = 10;
 
+	ready_queue_size = 0;
+	for (i = 0; i < NR_TASKS - 1; ++i) {
+		ready_queue_push(proc_table[i].pid);
+	}
+
 	k_reenter = 0;
 	ticks = 0;
 
@@ -95,7 +100,8 @@ void TestA()
 	int i = 0;
 	while (1) {
 		disp_str("A.");
-		milli_delay(10);
+		sys_sleep(10000);
+		while (p_proc_ready->sleep_duration);
 	}
 }
 
@@ -107,7 +113,8 @@ void TestB()
 	int i = 0x1000;
 	while(1){
 		disp_str("B.");
-		milli_delay(10);
+		sys_sleep(20000);
+		while (p_proc_ready->sleep_duration);
 	}
 }
 
@@ -119,7 +126,8 @@ void TestC()
 	int i = 0x2000;
 	while(1){
 		disp_str("C.");
-		milli_delay(10);
+		sys_sleep(30000);
+		while (p_proc_ready->sleep_duration);
 	}
 }
 
@@ -131,7 +139,8 @@ void TestD()
 	int i = 0x3000;
 	while(1){
 		disp_str("D.");
-		milli_delay(10);
+		sys_sleep(40000);
+		while (p_proc_ready->sleep_duration);
 	}
 }
 
@@ -143,7 +152,8 @@ void TestE()
 	int i = 0x4000;
 	while(1){
 		disp_str("E.");
-		milli_delay(10);
+		sys_sleep(50000);
+		while (p_proc_ready->sleep_duration);
 	}
 }
 
@@ -155,6 +165,7 @@ void TestF()
 	int i = 0x5000;
 	while(1){
 		disp_str("F.");
-		milli_delay(10);
+		sys_sleep(10000);
+		while (p_proc_ready->sleep_duration);
 	}
 }
