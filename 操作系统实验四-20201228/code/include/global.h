@@ -38,3 +38,17 @@ extern int ready_queue_find(int);
 extern void ready_queue_find_remove(int);
 extern int ready_queue_front();
 
+extern SEMAPHORE read_lock;
+extern SEMAPHORE reader_num_lock;
+extern SEMAPHORE write_lock;
+extern SEMAPHORE writer_num_lock;
+extern SEMAPHORE queue_lock;
+extern int reader_count;
+extern int writer_count;
+
+extern char READ[];
+extern char WRITE[];
+extern char BEGIN[];
+extern char ING[];
+extern char END[];
+extern char CRLF[];

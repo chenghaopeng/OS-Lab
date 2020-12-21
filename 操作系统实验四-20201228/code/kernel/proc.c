@@ -31,7 +31,10 @@ PUBLIC void schedule()
 	}
 	p = proc_table + NR_TASKS - 1;
 	if (p->sleep_duration > 0 && ready_queue_size > 0) {
-		p_proc_ready = proc_table + ready_queue_front();
+		int x = ready_queue_front();
+		ready_queue_pop();
+		ready_queue_push(x);
+		p_proc_ready = proc_table + x;
 	}
 	else {
 		p_proc_ready = p;
@@ -56,6 +59,7 @@ PUBLIC int sys_sleep(int milli_seconds)
 	int i = p_proc_ready->pid;
 	if (i == NR_TASKS - 1) return 0;
 	ready_queue_find_remove(i);
+	schedule();
 	return 0;
 }
 
@@ -73,6 +77,12 @@ PUBLIC int sys_print(char* str)
  *======================================================================*/
 PUBLIC int sys_signal_p(SEMAPHORE* s)
 {
+	// disp_str(p_proc_ready->p_name);
+	// disp_int(s->value);
+	if ((--s->value) >= 0) return 0;
+	ready_queue_find_remove(p_proc_ready->pid);
+	s->queue[s->size++] = p_proc_ready->pid;
+	schedule();
 	return 0;
 }
 
@@ -81,5 +91,13 @@ PUBLIC int sys_signal_p(SEMAPHORE* s)
  *======================================================================*/
 PUBLIC int sys_signal_v(SEMAPHORE* s)
 {
+	if ((++s->value) > 0 || s->size == 0) return 0;
+	ready_queue_push(s->queue[0]);
+	int i;
+	for (i = 0; i < s->size - 1; ++i) {
+		s->queue[i] = s->queue[i + 1];
+	}
+	s->size--;
+	schedule();
 	return 0;
 }

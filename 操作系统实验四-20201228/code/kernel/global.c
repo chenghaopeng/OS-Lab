@@ -20,12 +20,12 @@ PUBLIC	PROCESS			proc_table[NR_TASKS];
 PUBLIC	char			task_stack[STACK_SIZE_TOTAL];
 
 PUBLIC	TASK	task_table[NR_TASKS] = {
-                    {TestA, STACK_SIZE_TESTA, "A"},
-					{TestB, STACK_SIZE_TESTB, "B"},
-					{TestC, STACK_SIZE_TESTC, "C"},
-                    {TestD, STACK_SIZE_TESTD, "D"},
-					{TestE, STACK_SIZE_TESTE, "E"},
-					{TestF, STACK_SIZE_TESTF, "F"}
+                    {read_first_reader, STACK_SIZE_TESTA, "A"},
+					{read_first_reader, STACK_SIZE_TESTB, "B"},
+					{read_first_reader, STACK_SIZE_TESTC, "C"},
+                    {read_first_writer, STACK_SIZE_TESTD, "D"},
+					{read_first_writer, STACK_SIZE_TESTE, "E"},
+					{F, STACK_SIZE_TESTF, "F"}
                 };
 
 PUBLIC	irq_handler		irq_table[NR_IRQ];
@@ -64,3 +64,18 @@ PUBLIC void ready_queue_find_remove(int x) {
 PUBLIC int ready_queue_front() {
     return ready_queue[0];
 }
+
+PUBLIC SEMAPHORE read_lock;
+PUBLIC SEMAPHORE reader_num_lock;
+PUBLIC SEMAPHORE write_lock;
+PUBLIC SEMAPHORE writer_num_lock;
+PUBLIC SEMAPHORE queue_lock;
+PUBLIC int reader_count;
+PUBLIC int writer_count;
+
+PUBLIC char READ[] = " read ";
+PUBLIC char WRITE[] = " write";
+PUBLIC char BEGIN[] = " begin";
+PUBLIC char ING[] = " ing  ";
+PUBLIC char END[] = " end  ";
+PUBLIC char CRLF[] = "\n";

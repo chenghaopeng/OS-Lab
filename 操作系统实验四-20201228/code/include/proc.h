@@ -54,8 +54,8 @@ typedef struct s_task {
 
 typedef struct s_semaphore {
 	int value;
-	PROCESS* list[10];
-	int last;
+	int queue[10];
+	int size;
 } SEMAPHORE;
 
 /* Number of tasks */

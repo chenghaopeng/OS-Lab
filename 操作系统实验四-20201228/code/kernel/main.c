@@ -61,12 +61,31 @@ PUBLIC int kernel_main()
 		selector_ldt += 1 << 3;
 	}
 
-	proc_table[0].ticks = proc_table[0].priority = 20;
-	proc_table[1].ticks = proc_table[1].priority = 30;
-	proc_table[2].ticks = proc_table[2].priority = 30;
-	proc_table[3].ticks = proc_table[3].priority = 30;
-	proc_table[4].ticks = proc_table[4].priority = 40;
-	proc_table[5].ticks = proc_table[5].priority = 10;
+	proc_table[0].priority = 20;
+	proc_table[1].priority = 30;
+	proc_table[2].priority = 30;
+	proc_table[3].priority = 30;
+	proc_table[4].priority = 40;
+	proc_table[5].priority = 0;
+
+	proc_table[0].ticks = 0;
+	proc_table[1].ticks = 0;
+	proc_table[2].ticks = 0;
+	proc_table[3].ticks = 0;
+	proc_table[4].ticks = 0;
+	proc_table[5].ticks = 0;
+
+	read_lock.value = 1;
+	read_lock.size = 0;
+	write_lock.value = 1;
+	write_lock.size = 0;
+	reader_num_lock.value = 3; // 同时读者数量
+	reader_num_lock.size = 0;
+	writer_num_lock.value = 1;
+	writer_num_lock.size = 0;
+	queue_lock.value = 1;
+	queue_lock.size = 0;
+	reader_count = writer_count = 0;
 
 	ready_queue_size = 0;
 	for (i = 0; i < NR_TASKS - 1; ++i) {
@@ -92,80 +111,81 @@ PUBLIC int kernel_main()
 	while(1){}
 }
 
-/*======================================================================*
-                               TestA
- *======================================================================*/
-void TestA()
-{
-	int i = 0;
+void read_first_reader () {
 	while (1) {
-		disp_str("A.");
-		sys_sleep(10000);
-		while (p_proc_ready->sleep_duration);
+		signal_p(&reader_num_lock);
+		signal_p(&read_lock);
+		if (!reader_count) signal_p(&write_lock);
+		reader_count++;
+		if (!p_proc_ready->ticks) p_proc_ready->ticks = p_proc_ready->priority;
+		disp_str(p_proc_ready->p_name);
+		disp_str(READ);
+		disp_str(BEGIN);
+		disp_str(CRLF);
+		signal_v(&read_lock);
+
+		disp_str(p_proc_ready->p_name);
+		disp_str(READ);
+		disp_str(ING);
+		disp_str(CRLF);
+		while (p_proc_ready->ticks);
+
+		signal_p(&read_lock);
+		reader_count--;
+		if (!reader_count) signal_v(&write_lock);
+		disp_str(p_proc_ready->p_name);
+		disp_str(READ);
+		disp_str(END);
+		disp_str(CRLF);
+		signal_v(&read_lock);
+		signal_v(&reader_num_lock);
+		sleep(400);
 	}
 }
 
-/*======================================================================*
-                               TestB
- *======================================================================*/
-void TestB()
-{
-	int i = 0x1000;
-	while(1){
-		disp_str("B.");
-		sys_sleep(20000);
-		while (p_proc_ready->sleep_duration);
+void read_first_writer () {
+	while (1) {
+		signal_p(&write_lock);
+		disp_str(p_proc_ready->p_name);
+		disp_str(WRITE);
+		disp_str(BEGIN);
+		disp_str(CRLF);
+		if (!p_proc_ready->ticks) p_proc_ready->ticks = p_proc_ready->priority;
+		disp_str(p_proc_ready->p_name);
+		disp_str(WRITE);
+		disp_str(ING);
+		disp_str(CRLF);
+		while (p_proc_ready->ticks);
+		disp_str(p_proc_ready->p_name);
+		disp_str(WRITE);
+		disp_str(END);
+		disp_str(CRLF);
+		signal_v(&write_lock);
 	}
 }
 
-/*======================================================================*
-                               TestC
- *======================================================================*/
-void TestC()
-{
-	int i = 0x2000;
-	while(1){
-		disp_str("C.");
-		sys_sleep(30000);
-		while (p_proc_ready->sleep_duration);
+void write_first_reader () {
+	while (1) {
+		
 	}
 }
 
-/*======================================================================*
-                               TestD
- *======================================================================*/
-void TestD()
-{
-	int i = 0x3000;
-	while(1){
-		disp_str("D.");
-		sys_sleep(40000);
-		while (p_proc_ready->sleep_duration);
+void write_first_writer () {
+	while (1) {
+		
 	}
 }
 
-/*======================================================================*
-                               TestE
- *======================================================================*/
-void TestE()
-{
-	int i = 0x4000;
-	while(1){
-		disp_str("E.");
-		sys_sleep(50000);
-		while (p_proc_ready->sleep_duration);
-	}
-}
-
-/*======================================================================*
-                               TestF
- *======================================================================*/
-void TestF()
-{
-	int i = 0x5000;
-	while(1){
-		disp_str("F.");
-		sys_sleep(10000);
-		while (p_proc_ready->sleep_duration);
+void F () {
+	while (1) {
+		// int i;
+		// disp_pos = 0;
+		// for (i = 0; i < 80 * 25; ++i) {
+		// 	disp_str(" ");
+		// }
+		// disp_pos = 0;
+		// disp_str("F.");
+		// disp_int(0xf);
+		sleep(4000);
 	}
 }
