@@ -28,6 +28,8 @@ void read_first_reader();
 void read_first_writer();
 void write_first_reader();
 void write_first_writer();
+void no_slave_reader();
+void no_slave_writer();
 void F();
 
 /* i8259.c */

@@ -37,6 +37,15 @@ PUBLIC	TASK	task_table[NR_TASKS] = {
 // 					{F, STACK_SIZE_TESTF, "F"}
 //                 };
 
+// PUBLIC	TASK	task_table[NR_TASKS] = {
+//                     {no_slave_reader, STACK_SIZE_TESTA, "A"},
+// 					{no_slave_reader, STACK_SIZE_TESTB, "B"},
+// 					{no_slave_reader, STACK_SIZE_TESTC, "C"},
+//                     {no_slave_writer, STACK_SIZE_TESTD, "D"},
+// 					{no_slave_writer, STACK_SIZE_TESTE, "E"},
+// 					{F, STACK_SIZE_TESTF, "F"}
+//                 };
+
 PUBLIC	irq_handler		irq_table[NR_IRQ];
 
 PUBLIC	system_call		sys_call_table[NR_SYS_CALL] = {sys_get_ticks, sys_sleep, sys_print, sys_signal_p, sys_signal_v, sys_clear};
@@ -79,6 +88,7 @@ PUBLIC SEMAPHORE reader_num_lock;
 PUBLIC SEMAPHORE write_lock;
 PUBLIC SEMAPHORE writer_num_lock;
 PUBLIC SEMAPHORE queue_lock;
+PUBLIC SEMAPHORE no_slave_lock;
 PUBLIC int reader_count;
 PUBLIC int writer_count;
 

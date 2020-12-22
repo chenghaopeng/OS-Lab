@@ -92,6 +92,8 @@ PUBLIC int kernel_main()
 	writer_num_lock.size = 0;
 	queue_lock.value = 1;
 	queue_lock.size = 0;
+	no_slave_lock.value = 1;
+	no_slave_lock.size = 0;
 	reader_count = writer_count = 0;
 
 	ready_queue_size = 0;
@@ -193,6 +195,44 @@ void write_first_writer () {
 		if (!writer_count) signal_v(&queue_lock);
 		signal_v(&writer_num_lock);
 		sleep(400);
+	}
+}
+
+void no_slave_reader () {
+	while (1) {
+		signal_p(&reader_num_lock);
+		signal_p(&no_slave_lock);
+		signal_p(&read_lock);
+		if (!reader_count) signal_p(&write_lock);
+		reader_count++;
+		if (!p_proc_ready->ticks) p_proc_ready->ticks = p_proc_ready->priority;
+		print_task(READ, BEGIN);
+		signal_v(&read_lock);
+		signal_v(&no_slave_lock);
+
+		print_task(READ, ING);
+		while (p_proc_ready->ticks);
+
+		signal_p(&read_lock);
+		reader_count--;
+		if (!reader_count) signal_v(&write_lock);
+		print_task(READ, END);
+		signal_v(&read_lock);
+		signal_v(&reader_num_lock);
+	}
+}
+
+void no_slave_writer () {
+	while (1) {
+		signal_p(&no_slave_lock);
+		signal_p(&write_lock);
+		signal_v(&no_slave_lock);
+		print_task(WRITE, BEGIN);
+		if (!p_proc_ready->ticks) p_proc_ready->ticks = p_proc_ready->priority;
+		print_task(WRITE, ING);
+		while (p_proc_ready->ticks);
+		print_task(WRITE, END);
+		signal_v(&write_lock);
 	}
 }
 

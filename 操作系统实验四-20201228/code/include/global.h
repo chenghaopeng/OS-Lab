@@ -43,6 +43,7 @@ extern SEMAPHORE reader_num_lock;
 extern SEMAPHORE write_lock;
 extern SEMAPHORE writer_num_lock;
 extern SEMAPHORE queue_lock;
+extern SEMAPHORE no_slave_lock;
 extern int reader_count;
 extern int writer_count;
 
