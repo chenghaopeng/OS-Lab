@@ -155,13 +155,44 @@ void read_first_writer () {
 
 void write_first_reader () {
 	while (1) {
-		
+		signal_p(&reader_num_lock);
+		signal_p(&queue_lock);
+		signal_p(&read_lock);
+		if (!reader_count) signal_p(&write_lock);
+		reader_count++;
+		if (!p_proc_ready->ticks) p_proc_ready->ticks = p_proc_ready->priority;
+		print_task(READ, BEGIN);
+		signal_v(&read_lock);
+		signal_v(&queue_lock);
+
+		print_task(READ, ING);
+		while (p_proc_ready->ticks);
+
+		signal_p(&read_lock);
+		reader_count--;
+		if (!reader_count) signal_v(&write_lock);
+		print_task(READ, END);
+		signal_v(&read_lock);
+		signal_v(&reader_num_lock);
 	}
 }
 
 void write_first_writer () {
 	while (1) {
-		
+		signal_p(&writer_num_lock);
+		if (!writer_count) signal_p(&queue_lock);
+		writer_count++;
+		signal_p(&write_lock);
+		print_task(WRITE, BEGIN);
+		if (!p_proc_ready->ticks) p_proc_ready->ticks = p_proc_ready->priority;
+		print_task(WRITE, ING);
+		while (p_proc_ready->ticks);
+		print_task(WRITE, END);
+		signal_v(&write_lock);
+		writer_count--;
+		if (!writer_count) signal_v(&queue_lock);
+		signal_v(&writer_num_lock);
+		sleep(400);
 	}
 }
 

@@ -28,6 +28,15 @@ PUBLIC	TASK	task_table[NR_TASKS] = {
 					{F, STACK_SIZE_TESTF, "F"}
                 };
 
+// PUBLIC	TASK	task_table[NR_TASKS] = {
+//                     {write_first_writer, STACK_SIZE_TESTD, "D"},
+// 					{write_first_writer, STACK_SIZE_TESTE, "E"},
+//                     {write_first_reader, STACK_SIZE_TESTA, "A"},
+// 					{write_first_reader, STACK_SIZE_TESTB, "B"},
+// 					{write_first_reader, STACK_SIZE_TESTC, "C"},
+// 					{F, STACK_SIZE_TESTF, "F"}
+//                 };
+
 PUBLIC	irq_handler		irq_table[NR_IRQ];
 
 PUBLIC	system_call		sys_call_table[NR_SYS_CALL] = {sys_get_ticks, sys_sleep, sys_print, sys_signal_p, sys_signal_v, sys_clear};
