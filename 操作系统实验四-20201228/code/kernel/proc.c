@@ -101,3 +101,29 @@ PUBLIC int sys_signal_v(SEMAPHORE* s)
 	schedule();
 	return 0;
 }
+
+/*======================================================================*
+                           sys_clear
+ *======================================================================*/
+PUBLIC int sys_clear(SEMAPHORE* s)
+{
+	disp_pos = 0;
+	int i;
+	for (i = 0; i < 80 * 25; ++i) {
+		disp_str(WHITESPACE);
+	}
+	disp_pos = 0;
+	int cnt = 0, x = -1;
+	PROCESS* p;
+	for (p = proc_table; p < proc_table + NR_TASKS - 1; ++p) {
+		if (p->ticks) {
+			cnt++;
+			if (x < 0) {
+				x = p - proc_table;
+			}
+		}
+	}
+	if (x < 3) print_task(READ, NUM[cnt]);
+	else print_task(WRITE, NUM[cnt]);
+	return 0;
+}

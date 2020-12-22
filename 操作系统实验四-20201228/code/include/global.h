@@ -52,3 +52,5 @@ extern char BEGIN[];
 extern char ING[];
 extern char END[];
 extern char CRLF[];
+extern char WHITESPACE[];
+extern char* NUM[];

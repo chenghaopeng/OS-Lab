@@ -49,6 +49,7 @@ PUBLIC  int     sys_sleep(int);
 PUBLIC  int     sys_print(char*);
 PUBLIC  int     sys_signal_p(SEMAPHORE*);
 PUBLIC  int     sys_signal_v(SEMAPHORE*);
+PUBLIC  int     sys_clear();
 
 /* syscall.asm */
 PUBLIC  void    sys_call();
@@ -57,4 +58,5 @@ PUBLIC  int     sleep(int);
 PUBLIC  int     print(char*);
 PUBLIC  int     signal_p(SEMAPHORE*);
 PUBLIC  int     signal_v(SEMAPHORE*);
+PUBLIC  int     clear();
 

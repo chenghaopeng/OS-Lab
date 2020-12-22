@@ -12,6 +12,7 @@ _NR_sleep           equ 1
 _NR_print           equ 2
 _NR_signal_p        equ 3
 _NR_signal_v        equ 4
+_NR_clear           equ 5
 
 INT_VECTOR_SYS_CALL equ 0x90
 
@@ -21,6 +22,7 @@ global	sleep
 global	print
 global	signal_p
 global	signal_v
+global	clear
 
 bits 32
 [section .text]
@@ -66,6 +68,14 @@ signal_p:
 signal_v:
 	mov ebx, [esp + 4]
 	mov	eax, _NR_signal_v
+	int	INT_VECTOR_SYS_CALL
+	ret
+
+; ====================================================================
+;                              clear
+; ====================================================================
+clear:
+	mov	eax, _NR_clear
 	int	INT_VECTOR_SYS_CALL
 	ret
 

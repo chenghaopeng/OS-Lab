@@ -30,7 +30,7 @@ PUBLIC	TASK	task_table[NR_TASKS] = {
 
 PUBLIC	irq_handler		irq_table[NR_IRQ];
 
-PUBLIC	system_call		sys_call_table[NR_SYS_CALL] = {sys_get_ticks, sys_sleep, sys_print, sys_signal_p, sys_signal_v};
+PUBLIC	system_call		sys_call_table[NR_SYS_CALL] = {sys_get_ticks, sys_sleep, sys_print, sys_signal_p, sys_signal_v, sys_clear};
 
 PUBLIC int ready_queue[NR_TASKS];
 PUBLIC int ready_queue_size;
@@ -79,3 +79,5 @@ PUBLIC char BEGIN[] = " begin";
 PUBLIC char ING[] = " ing  ";
 PUBLIC char END[] = " end  ";
 PUBLIC char CRLF[] = "\n";
+PUBLIC char WHITESPACE[] = " ";
+PUBLIC char* NUM[] = {" 0", " 1", " 2", " 3"};

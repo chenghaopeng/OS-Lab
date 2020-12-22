@@ -21,7 +21,6 @@ global	in_byte
 global  enable_irq
 global  disable_irq
 
-
 ; ========================================================================
 ;                  void disp_str(char * info);
 ; ========================================================================
@@ -35,11 +34,6 @@ disp_str:
 
 	mov	esi, [ebp + 8]	; pszInfo
 	mov	edi, [disp_pos]
-	cmp edi, 4000
-	jle .continue
-	mov dword [disp_pos], 0
-	mov edi, 0
-.continue:
 	mov	ah, 0Fh
 .1:
 	lodsb
@@ -79,6 +73,7 @@ disp_str:
 disp_color_str:
 	push	ebp
 	mov	ebp, esp
+	push eax
 	push ebx
 	push esi
 	push edi
@@ -114,6 +109,7 @@ disp_color_str:
     pop edi
     pop esi
     pop ebx
+	pop eax
 	pop	ebp
 	ret
 

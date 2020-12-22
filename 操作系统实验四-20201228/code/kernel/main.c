@@ -75,6 +75,13 @@ PUBLIC int kernel_main()
 	proc_table[4].ticks = 0;
 	proc_table[5].ticks = 0;
 
+	proc_table[0].color = 0x09;
+	proc_table[1].color = 0x0a;
+	proc_table[2].color = 0x0b;
+	proc_table[3].color = 0x0c;
+	proc_table[4].color = 0x0d;
+	proc_table[5].color = 0x0f;
+
 	read_lock.value = 1;
 	read_lock.size = 0;
 	write_lock.value = 1;
@@ -118,25 +125,16 @@ void read_first_reader () {
 		if (!reader_count) signal_p(&write_lock);
 		reader_count++;
 		if (!p_proc_ready->ticks) p_proc_ready->ticks = p_proc_ready->priority;
-		disp_str(p_proc_ready->p_name);
-		disp_str(READ);
-		disp_str(BEGIN);
-		disp_str(CRLF);
+		print_task(READ, BEGIN);
 		signal_v(&read_lock);
 
-		disp_str(p_proc_ready->p_name);
-		disp_str(READ);
-		disp_str(ING);
-		disp_str(CRLF);
+		print_task(READ, ING);
 		while (p_proc_ready->ticks);
 
 		signal_p(&read_lock);
 		reader_count--;
 		if (!reader_count) signal_v(&write_lock);
-		disp_str(p_proc_ready->p_name);
-		disp_str(READ);
-		disp_str(END);
-		disp_str(CRLF);
+		print_task(READ, END);
 		signal_v(&read_lock);
 		signal_v(&reader_num_lock);
 		sleep(400);
@@ -146,20 +144,11 @@ void read_first_reader () {
 void read_first_writer () {
 	while (1) {
 		signal_p(&write_lock);
-		disp_str(p_proc_ready->p_name);
-		disp_str(WRITE);
-		disp_str(BEGIN);
-		disp_str(CRLF);
+		print_task(WRITE, BEGIN);
 		if (!p_proc_ready->ticks) p_proc_ready->ticks = p_proc_ready->priority;
-		disp_str(p_proc_ready->p_name);
-		disp_str(WRITE);
-		disp_str(ING);
-		disp_str(CRLF);
+		print_task(WRITE, ING);
 		while (p_proc_ready->ticks);
-		disp_str(p_proc_ready->p_name);
-		disp_str(WRITE);
-		disp_str(END);
-		disp_str(CRLF);
+		print_task(WRITE, END);
 		signal_v(&write_lock);
 	}
 }
@@ -178,14 +167,14 @@ void write_first_writer () {
 
 void F () {
 	while (1) {
-		// int i;
-		// disp_pos = 0;
-		// for (i = 0; i < 80 * 25; ++i) {
-		// 	disp_str(" ");
-		// }
-		// disp_pos = 0;
-		// disp_str("F.");
-		// disp_int(0xf);
-		sleep(4000);
+		clear();
+		sleep(20000);
 	}
+}
+
+void print_task (char* s1, char* s2) {
+	disp_color_str(p_proc_ready->p_name, p_proc_ready->color);
+	disp_color_str(s1, p_proc_ready->color);
+	disp_color_str(s2, p_proc_ready->color);
+	disp_color_str(CRLF, p_proc_ready->color);
 }
