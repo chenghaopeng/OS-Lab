@@ -68,6 +68,13 @@ PUBLIC int kernel_main()
 	proc_table[4].priority = 40;
 	proc_table[5].priority = 0;
 
+	// proc_table[0].priority = 30;
+	// proc_table[1].priority = 40;
+	// proc_table[2].priority = 20;
+	// proc_table[3].priority = 30;
+	// proc_table[4].priority = 30;
+	// proc_table[5].priority = 0;
+
 	proc_table[0].ticks = 0;
 	proc_table[1].ticks = 0;
 	proc_table[2].ticks = 0;

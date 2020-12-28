@@ -123,7 +123,8 @@ PUBLIC int sys_clear(SEMAPHORE* s)
 			}
 		}
 	}
-	if (x < 3) print_task(READ, NUM[cnt]);
+	p = proc_table + x;
+	if (p->p_name[0] <= 'C') print_task(READ, NUM[cnt]);
 	else print_task(WRITE, NUM[cnt]);
 	return 0;
 }
